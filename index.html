@@ -309,9 +309,7 @@ input {
 
 <body>
 
-<audio id="song" preload="auto" loop>
-  <source src="order3.mpeg" type="audio/mpeg">
-</audio>
+<audio id="song" preload="auto" loop></audio>
 
 <!-- SCREEN 1: HEART -->
 <section id="s1" class="screen active">
@@ -365,7 +363,7 @@ input {
 
     <div id="cardInside" class="hidden">
       <div class="card-photo">
-        <img src="image1.jpeg" alt="A special memory together">
+        <img id="image1">
       </div>
 
       <p class="caption">
@@ -421,7 +419,7 @@ input {
   <h1>Surprise Number Two 📸</h1>
 
   <div class="photo-frame">
-    <img src="image2.jpeg" alt="Second surprise photo">
+    <img id="image2">
   </div>
 
   <div class="panel">
@@ -448,7 +446,7 @@ input {
 
   <div id="butterflyReveal" class="hidden">
     <div class="photo-frame photo-rotate">
-      <img src="image3.jpeg" alt="Third surprise photo">
+      <img id="image3">
     </div>
 
     <button onclick="go('s7')">One more surprise 🎈</button>
@@ -472,7 +470,7 @@ input {
 
   <div id="balloonReveal" class="hidden">
     <div class="photo-frame">
-      <img src="image4.jpeg" alt="Balloon surprise photo">
+      <img id="image4">
     </div>
 
     <div class="panel">
@@ -499,7 +497,7 @@ input {
     <div class="kiss-row">💋 💋 💋 💖 💋 💋 💋</div>
 
     <div class="photo-frame">
-      <img src="image5.jpeg" alt="A special photo of mother and sister">
+      <img id="image5">
     </div>
 
     <div class="panel">
@@ -516,7 +514,7 @@ input {
     <button onclick="restart()">Replay the surprise ↻</button>
   </div>
 </section>
-
+<script src="crypto.js"></script>
 <script>
 const song = document.getElementById("song");
 
@@ -549,7 +547,7 @@ function tapHeart() {
 
   sprinkleHearts(18);
 }
-function unlock() {
+async function unlock() {
   const value = document.getElementById("nameInput").value.trim();
   const error = document.getElementById("nameError");
 
@@ -557,6 +555,15 @@ function unlock() {
     error.textContent = "Incorrect password. Try again 💗";
     return;
   }
+
+  for (let i = 1; i < 6; i++) {
+    const decrypted = await decryptFile(value.toLowerCase(), `enc/image${i}.bin`);
+    const blob = new Blob([decrypted]);
+    document.getElementById(`image${i}`).src = URL.createObjectURL(blob);
+  }
+
+  const musicData = await decryptFile(value.toLowerCase(), "enc/music.bin");
+  document.getElementById("song").src = URL.createObjectURL(new Blob([musicData]));
 
   error.textContent = "";
   go("s3");
